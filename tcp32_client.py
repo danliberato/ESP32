@@ -115,7 +115,8 @@ def options():
 	print('  --- Options ---')
 	print('  send : Send a file')
 	print('  del : Delete a file')
-	print('  recv : Receive a file')
+	print('  re
+	cv : Receive a file')
 	print('  root : Enter as root')
 	print('  x : Exit')
 	print('  ---------------')
