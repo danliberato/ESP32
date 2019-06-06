@@ -21,12 +21,11 @@ def Main():
 		print("Connection error: ", err)
 		sys.exit()
 		
-	print('[ Options ]')
 	options()
 
 	opt = ''
 	while opt != 'x':
-		opt = input('>')
+		opt = input('  > ').lower()
 		if opt == 'send': 					# SEND FILE TO SERVER
 			soc.send(opt.encode())		#send option to server
 			nome = input('Select the file: '+os.getcwd()+'/')
@@ -84,6 +83,7 @@ def Main():
 				print('You have to login as root before try that option!')
 			else:
 				soc.send(opt.encode())
+				print('RCV= ',receive_input(soc))
 			
 		elif opt == 'root':
 			soc.send(opt.encode())
@@ -112,11 +112,13 @@ def receive_input(connection, max_size = max_buffer_size):
 
 
 def options():
+	print('  --- Options ---')
 	print('  send : Send a file')
 	print('  del : Delete a file')
-	print('  rcv : Receive a file')
+	print('  recv : Receive a file')
 	print('  root : Enter as root')
 	print('  x : Exit')
+	print('  ---------------')
 
 if __name__ == '__main__': 
 	Main()
