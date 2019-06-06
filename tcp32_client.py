@@ -1,10 +1,9 @@
-# Import socket module 
-#https://gist.github.com/giefko/2fa22e01ff98e72a5be2
 import socket 
 import sys
 import json
 import os
 import time
+from getpass import getpass
 
 max_buffer_size = 1024
 #host = "localhost"
@@ -12,7 +11,9 @@ host = "192.168.4.1"
 port = 8888
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+
 def Main(): 
+	rootMode = False
 	
 	try:
 		soc.connect((host, port))
@@ -26,15 +27,14 @@ def Main():
 	opt = ''
 	while opt != 'x':
 		opt = input('>')
-		if opt == 's': 					# SEND FILE TO SERVER
+		if opt == 'send': 					# SEND FILE TO SERVER
 			soc.send(opt.encode())		#send option to server
 			nome = input('Select the file: '+os.getcwd()+'/')
 
 			if os.path.exists(nome):
-				#time.sleep(1)
+				
 				soc.send(nome.encode())	#send file name to server
-				#time.sleep(1)
-			
+				
 				f_size = os.path.getsize(os.getcwd()+'/'+nome)
 				soc.send(str(f_size).encode())	#send file size to server
 				
@@ -58,17 +58,15 @@ def Main():
 			else:
 				print('File not found.')
 
-		elif opt == 'r':				# RECEIVE FILE FROM SERVER
+		elif opt == 'recv':				# RECEIVE FILE FROM SERVER
 			soc.send(opt.encode())		#send option to server
-			f_name = input('Nome do arquivo a ser recebido: ')
+			f_name = input('File name to be received: ')
 	
 			soc.send(f_name.encode())
-			time.sleep(1)
 			response = soc.recv(2).decode()
 			if response == '!f':
 				
-				f_size = int(soc.recv(6).decode()) #receive file size
-				#f_size = receive_input(soc,max_buffer_size)
+				f_size = int(receive_input(soc))
 				
 				print(f_size,"btyes incoming...")
 				with open(('rcv/'+f_name), 'wb') as f:
@@ -81,8 +79,18 @@ def Main():
 				f.close()
 			else:
 				print('File not found!')
-		elif opt == 'd':				#DELETE A FILE
+		elif opt == 'del':				#DELETE A  vbiusgdf
+			if not rootMode:
+				print('You have to login as root before try that option!')
+			else:
+				soc.send(opt.encode())
+			
+		elif opt == 'root':
 			soc.send(opt.encode())
+			soc.send(getpass("Insert password:").encode())
+			rootMode = receive_input(soc)
+			print('You have','now' if rootMode else 'not', 'root privileges')
+		
 		else:				#default
 			print('Please select an option...')
 			options()
@@ -91,7 +99,7 @@ def Main():
 	soc.close()
 	sys.exit()
 	
-def receive_input(connection, max_buffer_size):
+def receive_input(connection, max_size = max_buffer_size):
 	client_input = connection.recv(max_buffer_size)
 	client_input_size = sys.getsizeof(client_input)
 
@@ -104,9 +112,10 @@ def receive_input(connection, max_buffer_size):
 
 
 def options():
-	print('  s : Send a file')
-	print('  d : Delete a file')
-	print('  r : Receive a file')
+	print('  send : Send a file')
+	print('  del : Delete a file')
+	print('  rcv : Receive a file')
+	print('  root : Enter as root')
 	print('  x : Exit')
 
 if __name__ == '__main__': 
