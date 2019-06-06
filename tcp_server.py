@@ -47,7 +47,7 @@ def clientThread(sock, ip, port):
                         f.close()
                         led.value(0)
                             
-                    print('File transfer complete!',checkSpace(), 'Bytes left.')
+                    print('File received from [', + ip + ':' + port + ']',checkSpace(), 'Bytes left.')
                 else:
                     print('System out of space!')
                 
@@ -69,7 +69,7 @@ def clientThread(sock, ip, port):
                     
                     led.value(0)
                     f.close()
-                    print('File transfer complete!')
+                    print('File sent to ['+ ip + ':' + port+']')
                     gc.collect()
                 except OSError as exc:
                     if exc.args[0] == errno.ENOENT:
@@ -79,7 +79,7 @@ def clientThread(sock, ip, port):
                         print('ERROR:', exc.args[0])
             elif opt == 'del' and rootMode:
                 print('List:\n',os.listdir(f_dir))
-                sock.send(os.listdir(f_dir).encode())
+                sock.send(str(os.listdir(f_dir)).encode())
                 os.remove(f_dir +'/'+os.listdir()[sock.recv(max_buffer_size).decode()])
             
             elif opt == 'root':
