@@ -23,7 +23,6 @@ def clientThread(sock, ip, port):
     #try:
     rootMode = False
     while True:
-        m_info()
         gc.collect()
         gc.mem_free()
         m_info()
